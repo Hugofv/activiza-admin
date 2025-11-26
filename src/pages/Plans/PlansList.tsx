@@ -121,7 +121,7 @@ export default function PlansList() {
           </Link>
         </div>
 
-        <ComponentCard>
+        <ComponentCard title="Planos">
           <div className="mb-4">
             <input
               type="text"

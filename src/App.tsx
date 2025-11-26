@@ -28,6 +28,8 @@ import FeaturesList from "./pages/Features/FeaturesList";
 import FeatureForm from "./pages/Features/FeatureForm";
 import PlansList from "./pages/Plans/PlansList";
 import PlanForm from "./pages/Plans/PlanForm";
+import QualificationsList from "./pages/Qualifications/QualificationsList";
+import QualificationForm from "./pages/Qualifications/QualificationForm";
 
 export default function App() {
   return (
@@ -105,6 +107,11 @@ export default function App() {
             <Route path="/plans" element={<PlansList />} />
             <Route path="/plans/new" element={<PlanForm />} />
             <Route path="/plans/:id/edit" element={<PlanForm />} />
+
+            {/* Qualifications */}
+            <Route path="/qualifications" element={<QualificationsList />} />
+            <Route path="/qualifications/new" element={<QualificationForm />} />
+            <Route path="/qualifications/:id/edit" element={<QualificationForm />} />
           </Route>
 
           {/* Fallback Route */}

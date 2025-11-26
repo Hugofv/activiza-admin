@@ -10,4 +10,5 @@ export { accountsService } from './accountsService';
 export { platformUsersService } from './platformUsersService';
 export { featuresService } from './featuresService';
 export { plansService } from './plansService';
+export { qualificationsService } from './qualificationsService';
 

@@ -3,26 +3,26 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
+import { useForm, FormProvider, useFieldArray, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useParams } from 'react-router';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
 import ComponentCard from '@/components/common/ComponentCard';
 import PageMeta from '@/components/common/PageMeta';
 import FormInput from '@/components/form/input/FormInput';
-import { plansService, Plan } from '@/lib/api/services/plansService';
+import { plansService } from '@/lib/api/services/plansService';
 import { featuresService, Feature } from '@/lib/api/services/featuresService';
 import {
   createPlanSchema,
   updatePlanSchema,
   CreatePlanFormData,
   UpdatePlanFormData,
-  PlanFeatureFormData,
 } from '@/lib/validations/plans.schema';
 import { toast } from '@/lib/toast';
 import FormSkeleton from '@/components/ui/skeleton/FormSkeleton';
 import Checkbox from '@/components/form/input/Checkbox';
 import Select from '@/components/form/Select';
+import MoneyInput from '@/components/form/input/MoneyInput';
 import { PlusIcon, TrashBinIcon } from '@/icons';
 
 export default function PlanForm() {
@@ -56,7 +56,7 @@ export default function PlanForm() {
       try {
         const response = await featuresService.getAll({ limit: 1000 });
         setAvailableFeatures(response.data.filter((f) => f.isActive));
-      } catch (err) {
+      } catch {
         toast.error('Erro ao carregar features', 'Não foi possível carregar a lista de features');
       }
     };
@@ -120,10 +120,6 @@ export default function PlanForm() {
     }
   };
 
-  const getFeatureName = (featureId: number) => {
-    const feature = availableFeatures.find((f) => f.id === featureId);
-    return feature?.name || 'Feature não encontrada';
-  };
 
   const getTotalPrice = () => {
     const features = methods.watch('features') || [];
@@ -228,22 +224,31 @@ export default function PlanForm() {
                                   <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Preço (R$) <span className="text-error-500">*</span>
                                   </label>
-                                  <input
-                                    type="number"
-                                    step="0.01"
-                                    min="0"
-                                    placeholder="0.00"
-                                    {...methods.register(`features.${index}.price`, {
-                                      valueAsNumber: true,
-                                    })}
-                                    className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                                    disabled={isLoading}
+                                  <Controller
+                                    name={`features.${index}.price`}
+                                    control={methods.control}
+                                    render={({ field, fieldState }) => (
+                                      <>
+                                        <MoneyInput
+                                          value={field.value}
+                                          onChange={(value) => field.onChange(value)}
+                                          onBlur={field.onBlur}
+                                          placeholder="0,00"
+                                          disabled={isLoading}
+                                          prefix="R$ "
+                                          decimalSeparator=","
+                                          thousandSeparator="."
+                                          decimalScale={2}
+                                          fixedDecimalScale
+                                        />
+                                        {fieldState.error && (
+                                          <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                                            {fieldState.error.message}
+                                          </p>
+                                        )}
+                                      </>
+                                    )}
                                   />
-                                  {methods.formState.errors.features?.[index]?.price && (
-                                    <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                                      {methods.formState.errors.features[index]?.price?.message}
-                                    </p>
-                                  )}
                                 </div>
                                 <button
                                   type="button"

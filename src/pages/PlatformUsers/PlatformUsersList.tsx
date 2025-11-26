@@ -4,7 +4,6 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import PageBreadcrumb from '../../components/common/PageBreadCrumb';
 import ComponentCard from '../../components/common/ComponentCard';
 import PageMeta from '../../components/common/PageMeta';
 import {
@@ -114,7 +113,6 @@ export default function PlatformUsersList() {
         title="Usuários da Plataforma | Ativiza"
         description="Gerenciamento de usuários da plataforma"
       />
-      <PageBreadcrumb pageTitle="Usuários da Plataforma" />
       <div className="space-y-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">Usuários da Plataforma</h2>

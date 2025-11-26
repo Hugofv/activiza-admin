@@ -5,11 +5,17 @@
 import apiClient from '../client';
 import { ApiResponse, PaginatedResponse } from '../types';
 
+export interface FeaturePrice {
+  price: number;
+  currency: 'BRL' | 'USD' | 'EUR' | 'GBP';
+}
+
 export interface Feature {
   id: number;
   name: string;
   description?: string;
   code: string;
+  prices: FeaturePrice[];
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -19,6 +25,7 @@ export interface CreateFeatureData {
   name: string;
   description?: string;
   code: string;
+  prices: FeaturePrice[];
   isActive?: boolean;
 }
 
@@ -26,6 +33,7 @@ export interface UpdateFeatureData {
   name?: string;
   description?: string;
   code?: string;
+  prices?: FeaturePrice[];
   isActive?: boolean;
 }
 

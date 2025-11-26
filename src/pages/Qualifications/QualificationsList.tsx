@@ -1,5 +1,5 @@
 /**
- * Features List Page
+ * Qualifications List Page
  */
 
 import { useState, useEffect } from 'react';
@@ -14,13 +14,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import Badge from '@/components/ui/badge/Badge';
-import { featuresService, Feature } from '@/lib/api/services/featuresService';
+import { qualificationsService, Qualification } from '@/lib/api/services/qualificationsService';
 import { toast } from '@/lib/toast';
 import { PencilIcon, TrashBinIcon, PlusIcon } from '@/icons';
 import ConfirmDialog from '@/components/ui/confirmDialog/ConfirmDialog';
 
-export default function FeaturesList() {
-  const [features, setFeatures] = useState<Feature[]>([]);
+export default function QualificationsList() {
+  const [qualifications, setQualifications] = useState<Qualification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -28,63 +28,63 @@ export default function FeaturesList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
-    featureId: number | null;
-    featureName: string | null;
+    qualificationId: number | null;
+    qualificationName: string | null;
   }>({
     isOpen: false,
-    featureId: null,
-    featureName: null,
+    qualificationId: null,
+    qualificationName: null,
   });
 
-  const fetchFeatures = async () => {
+  const fetchQualifications = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await featuresService.getAll({
+      const response = await qualificationsService.getAll({
         page,
         limit: 20,
         q: searchQuery || undefined,
       });
-      setFeatures(response.data);
+      setQualifications(response.data);
       setTotalPages(response.totalPages);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar features';
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar qualificações';
       setError(errorMessage);
-      toast.error('Erro ao carregar features', errorMessage);
+      toast.error('Erro ao carregar qualificações', errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchFeatures();
+    fetchQualifications();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchQuery]);
 
   const handleDeleteClick = (id: number, name: string) => {
     setDeleteDialog({
       isOpen: true,
-      featureId: id,
-      featureName: name,
+      qualificationId: id,
+      qualificationName: name,
     });
   };
 
   const handleDeleteConfirm = async () => {
-    if (!deleteDialog.featureId) return;
+    if (!deleteDialog.qualificationId) return;
 
     try {
-      await featuresService.delete(deleteDialog.featureId);
-      toast.success('Feature excluída com sucesso!');
-      setDeleteDialog({ isOpen: false, featureId: null, featureName: null });
-      fetchFeatures();
+      await qualificationsService.delete(deleteDialog.qualificationId);
+      toast.success('Qualificação excluída com sucesso!');
+      setDeleteDialog({ isOpen: false, qualificationId: null, qualificationName: null });
+      fetchQualifications();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir feature';
-      toast.error('Erro ao excluir feature', errorMessage);
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir qualificação';
+      toast.error('Erro ao excluir qualificação', errorMessage);
     }
   };
 
   const handleDeleteCancel = () => {
-    setDeleteDialog({ isOpen: false, featureId: null, featureName: null });
+    setDeleteDialog({ isOpen: false, qualificationId: null, qualificationName: null });
   };
 
   const getStatusBadge = (isActive: boolean) => {
@@ -102,26 +102,26 @@ export default function FeaturesList() {
   return (
     <>
       <PageMeta
-        title="Features | Ativiza"
-        description="Gerenciamento de features"
+        title="Qualificações | Ativiza"
+        description="Gerenciamento de qualificações"
       />
       <div className="space-y-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">Features</h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white/90">Qualificações</h2>
           <Link
-            to="/features/new"
+            to="/qualifications/new"
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors bg-brand-500 rounded-lg hover:bg-brand-600"
           >
             <PlusIcon className="size-4" />
-            Nova Funcionalidade
+            Nova Qualificação
           </Link>
         </div>
 
-        <ComponentCard title="Lista de Funcionalidades">
+        <ComponentCard title="Lista de Qualificações">
           <div className="mb-4">
             <input
               type="text"
-              placeholder="Buscar funcionalidades..."
+              placeholder="Buscar qualificações..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -139,9 +139,9 @@ export default function FeaturesList() {
             <div className="p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400">
               {error}
             </div>
-          ) : features.length === 0 ? (
+          ) : qualifications.length === 0 ? (
             <div className="py-12 text-center text-gray-500 dark:text-gray-400">
-              Nenhuma funcionalidade encontrada
+              Nenhuma qualificação encontrada
             </div>
           ) : (
             <>
@@ -159,19 +159,13 @@ export default function FeaturesList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Código da Funcionalidade
+                        Código da Qualificação
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Descrição da Funcionalidade
-                      </TableCell>
-                      <TableCell
-                        isHeader
-                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                      >
-                        Preços
+                        Descrição da Qualificação
                       </TableCell>
                       <TableCell
                         isHeader
@@ -188,48 +182,32 @@ export default function FeaturesList() {
                     </TableRow>
                   </TableHeader>
                   <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                    {features.map((feature) => (
-                      <TableRow key={feature.id}>
+                    {qualifications.map((qualification) => (
+                      <TableRow key={qualification.id}>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
-                          {feature.name}
+                          {qualification.name}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
                           <code className="px-2 py-1 text-xs bg-gray-100 rounded dark:bg-gray-800">
-                            {feature.code}
+                            {qualification.code}
                           </code>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
-                          {feature.description || '-'}
-                        </TableCell>
-                        <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
-                          {feature.prices && feature.prices.length > 0 ? (
-                            <div className="flex flex-col gap-1">
-                              {feature.prices.map((price, idx) => {
-                                const currencySymbol = price.currency === 'BRL' ? 'R$' : price.currency === 'USD' ? '$' : price.currency === 'EUR' ? '€' : '£';
-                                return (
-                                  <span key={idx} className="font-medium">
-                                    {currencySymbol} {price.price.toFixed(2).replace('.', ',')}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
+                          {qualification.description || '-'}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm">
-                          {getStatusBadge(feature.isActive)}
+                          {getStatusBadge(qualification.isActive)}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm">
                           <div className="flex items-center gap-2">
                             <Link
-                              to={`/features/${feature.id}/edit`}
+                              to={`/qualifications/${qualification.id}/edit`}
                               className="p-2 text-gray-600 transition-colors rounded hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
                             >
                               <PencilIcon className="size-4" />
                             </Link>
                             <button
-                              onClick={() => handleDeleteClick(feature.id, feature.name)}
+                              onClick={() => handleDeleteClick(qualification.id, qualification.name)}
                               className="p-2 text-red-600 transition-colors rounded hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                             >
                               <TrashBinIcon className="size-4" />
@@ -272,9 +250,9 @@ export default function FeaturesList() {
         isOpen={deleteDialog.isOpen}
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
-        title="Excluir Feature"
-        message="Tem certeza que deseja excluir esta feature? Esta ação não pode ser desfeita."
-        itemName={deleteDialog.featureName || undefined}
+        title="Excluir Qualificação"
+        message="Tem certeza que deseja excluir esta qualificação? Esta ação não pode ser desfeita."
+        itemName={deleteDialog.qualificationName || undefined}
         confirmText="Excluir"
         cancelText="Cancelar"
         variant="danger"

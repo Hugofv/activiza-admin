@@ -11,6 +11,7 @@ import {
   BoxIcon,
   BoltIcon,
   DollarLineIcon,
+  CheckCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 
@@ -46,6 +47,11 @@ const navItems: NavItem[] = [
     icon: <DollarLineIcon />,
     name: "Planos",
     path: "/plans",
+  },
+  {
+    icon: <CheckCircleIcon />,
+    name: "Qualificações",
+    path: "/qualifications",
   },
   {
     icon: <UserCircleIcon />,
