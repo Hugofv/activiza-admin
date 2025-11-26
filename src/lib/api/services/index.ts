@@ -6,9 +6,10 @@
 export { authService } from './authService';
 export { clientsService } from './clientsService';
 export { operationsService } from './operationsService';
+export { accountsService } from './accountsService';
+export { platformUsersService } from './platformUsersService';
 
 // Add more services as needed:
-// export { accountsService } from './accountsService';
 // export { installmentsService } from './installmentsService';
 // export { paymentsService } from './paymentsService';
 // etc.

@@ -20,6 +20,10 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import PublicRoute from "./components/common/PublicRoute";
+import AccountsList from "./pages/Accounts/AccountsList";
+import AccountForm from "./pages/Accounts/AccountForm";
+import PlatformUsersList from "./pages/PlatformUsers/PlatformUsersList";
+import PlatformUserForm from "./pages/PlatformUsers/PlatformUserForm";
 
 export default function App() {
   return (
@@ -77,6 +81,16 @@ export default function App() {
             {/* Charts */}
             <Route path="/line-chart" element={<LineChart />} />
             <Route path="/bar-chart" element={<BarChart />} />
+
+            {/* Accounts */}
+            <Route path="/accounts" element={<AccountsList />} />
+            <Route path="/accounts/new" element={<AccountForm />} />
+            <Route path="/accounts/:id/edit" element={<AccountForm />} />
+
+            {/* Platform Users */}
+            <Route path="/platform-users" element={<PlatformUsersList />} />
+            <Route path="/platform-users/new" element={<PlatformUserForm />} />
+            <Route path="/platform-users/:id/edit" element={<PlatformUserForm />} />
           </Route>
 
           {/* Fallback Route */}
