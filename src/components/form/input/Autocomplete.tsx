@@ -33,9 +33,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
 }) => {
   const selectedOption = options.find((opt) => opt.value === value) || null;
 
-  const handleChange = (
-    newValue: SingleValue<Option>
-  ) => {
+  const handleChange = (newValue: SingleValue<Option>) => {
     if (newValue) {
       onChange(newValue.value);
     } else {
@@ -169,8 +167,7 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
 
   // Use CreatableSelect if allowCustom is true
   if (allowCustom) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const CreatableSelect = require('react-select/creatable').default;
+    const CreatableSelect = import('react-select/creatable');
 
     return (
       <div className={className}>
@@ -183,9 +180,9 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
           placeholder={placeholder}
           styles={customStyles}
           formatCreateLabel={(inputValue: string) => `Criar "${inputValue}"`}
-          createOptionPosition="first"
-          classNamePrefix="react-select"
-          className="react-select-container"
+          createOptionPosition='first'
+          classNamePrefix='react-select'
+          className='react-select-container'
           isSearchable
           theme={(theme: Theme) => ({
             ...theme,
@@ -212,8 +209,8 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
         onChange={handleChange}
         placeholder={placeholder}
         styles={customStyles}
-        classNamePrefix="react-select"
-        className="react-select-container"
+        classNamePrefix='react-select'
+        className='react-select-container'
         isSearchable
         theme={(theme: Theme) => ({
           ...theme,
@@ -231,4 +228,3 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
 };
 
 export default Autocomplete;
-

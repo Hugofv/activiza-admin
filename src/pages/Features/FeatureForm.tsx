@@ -60,7 +60,7 @@ export default function FeatureForm() {
     const fetchModules = async () => {
       try {
         const response = await modulesService.getAll({ limit: 1000 });
-        setAvailableModules(response.data.filter((m) => m.isActive));
+        setAvailableModules(response.results.filter((m) => m.isActive));
       } catch {
         // Silently fail, modules are optional
       }

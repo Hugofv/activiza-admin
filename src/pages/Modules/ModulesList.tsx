@@ -45,7 +45,7 @@ export default function ModulesList() {
         limit: 20,
         q: searchQuery || undefined,
       });
-      setModules(response.data);
+      setModules(response.results);
       setTotalPages(response.totalPages);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar módulos';
@@ -139,7 +139,7 @@ export default function ModulesList() {
             <div className="p-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400">
               {error}
             </div>
-          ) : modules.length === 0 ? (
+          ) : modules?.length === 0 ? (
             <div className="py-12 text-center text-gray-500 dark:text-gray-400">
               Nenhum módulo encontrado
             </div>
