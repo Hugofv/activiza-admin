@@ -68,7 +68,7 @@ export default function ModuleForm() {
               translations: translationsArray,
             },
             isActive: module.isActive,
-          } as any);
+          } as CreateModuleFormData);
           
           setIsActive(module.isActive);
         } catch (err) {

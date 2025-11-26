@@ -93,23 +93,18 @@ export default function FeatureForm() {
               translations: translationsArray,
             },
             isActive: feature.isActive,
-          } as any);
+          } as CreateFeatureFormData);
           setIsActive(feature.isActive);
         } catch (err) {
-          const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar feature';
-          toast.error('Erro ao carregar feature', errorMessage);
+          const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar funcionalidade';
+          toast.error('Erro ao carregar funcionalidade', errorMessage);
         } finally {
           setIsFetching(false);
         }
       };
       fetchFeature();
-    } else {
-      // Adiciona um preço inicial ao criar nova feature
-      if (fields.length === 0) {
-        append({ price: 0, currency: 'BRL' });
-      }
     }
-  }, [id, isEdit, methods, fields.length, append]);
+  }, [id, isEdit, methods]);
 
   const onSubmit = async (data: unknown) => {
     setIsLoading(true);

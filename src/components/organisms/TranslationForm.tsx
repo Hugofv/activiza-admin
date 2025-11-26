@@ -24,14 +24,14 @@ export default function TranslationForm({
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: fieldName as any,
+    name: fieldName,
   });
 
   const handleAddTranslation = () => {
     // Find first unused locale
     const usedLocales: string[] = [];
     fields.forEach((_, idx) => {
-      const locale = getValues(`${fieldName}.${idx}.locale` as any) as string | undefined;
+      const locale = getValues(`${fieldName}.${idx}.locale`) as string | undefined;
       if (locale) usedLocales.push(locale);
     });
     const availableLocale = COMMON_LOCALES.find((loc) => !usedLocales.includes(loc.value));
@@ -48,7 +48,7 @@ export default function TranslationForm({
     const usedLocales: string[] = [];
     fields.forEach((_, idx) => {
       if (idx !== currentIndex) {
-        const locale = getValues(`${fieldName}.${idx}.locale` as any) as string | undefined;
+        const locale = getValues(`${fieldName}.${idx}.locale`) as string | undefined;
         if (locale) usedLocales.push(locale);
       }
     });
@@ -91,7 +91,7 @@ export default function TranslationForm({
                       Idioma <span className="text-error-500">*</span>
                     </label>
                     <Controller
-                      name={`${fieldName}.${index}.locale` as any}
+                      name={`${fieldName}.${index}.locale`}
                       control={control}
                       render={({ field: localeField, fieldState }) => (
                         <>
@@ -117,7 +117,7 @@ export default function TranslationForm({
                       Nome Traduzido <span className="text-error-500">*</span>
                     </label>
                     <Controller
-                      name={`${fieldName}.${index}.value` as any}
+                      name={`${fieldName}.${index}.value`}
                       control={control}
                       render={({ field: valueField, fieldState }) => (
                         <>
