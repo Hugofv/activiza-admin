@@ -56,5 +56,5 @@ const clients = await clientsService.getAll({ page: 1, limit: 10 });
 2. Export it from `services/index.ts`
 3. Use it in your components
 
-See `INTEGRATION.md` for detailed examples.
+See [CRUD_IMPLEMENTATION.md](./CRUD_IMPLEMENTATION.md) and [AUTHENTICATION.md](./AUTHENTICATION.md) for detailed examples.
 

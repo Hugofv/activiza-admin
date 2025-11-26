@@ -4,19 +4,20 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import PageBreadcrumb from '../../components/common/PageBreadCrumb';
-import ComponentCard from '../../components/common/ComponentCard';
-import PageMeta from '../../components/common/PageMeta';
+import ComponentCard from '@/components/common/ComponentCard';
+import PageMeta from '@/components/common/PageMeta';
 import {
   Table,
   TableBody,
   TableCell,
   TableHeader,
   TableRow,
-} from '../../components/ui/table';
-import Badge from '../../components/ui/badge/Badge';
-import { accountsService, Account } from '../../lib/api/services/accountsService';
-import { PencilIcon, TrashBinIcon, PlusIcon } from '../../icons';
+} from '@/components/ui/table';
+import Badge from '@/components/ui/badge/Badge';
+import { accountsService, Account } from '@/lib/api/services/accountsService';
+import { toast } from '@/lib/toast';
+import { PencilIcon, TrashBinIcon, PlusIcon } from '@/icons';
+import ConfirmDialog from '@/components/ui/confirmDialog/ConfirmDialog';
 
 export default function AccountsList() {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -25,6 +26,15 @@ export default function AccountsList() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    accountId: string | null;
+    accountName: string | null;
+  }>({
+    isOpen: false,
+    accountId: null,
+    accountName: null,
+  });
 
   const fetchAccounts = async () => {
     setIsLoading(true);
@@ -38,7 +48,9 @@ export default function AccountsList() {
       setAccounts(response.data);
       setTotalPages(response.totalPages);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar contas');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar contas';
+      setError(errorMessage);
+      toast.error('Erro ao carregar contas', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -49,16 +61,30 @@ export default function AccountsList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchQuery]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir esta conta?')) {
-      return;
-    }
+  const handleDeleteClick = (id: string, name: string) => {
+    setDeleteDialog({
+      isOpen: true,
+      accountId: id,
+      accountName: name,
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteDialog.accountId) return;
+
     try {
-      await accountsService.delete(id);
+      await accountsService.delete(deleteDialog.accountId);
+      toast.success('Conta excluída com sucesso!');
+      setDeleteDialog({ isOpen: false, accountId: null, accountName: null });
       fetchAccounts();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir conta');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir conta';
+      toast.error('Erro ao excluir conta', errorMessage);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialog({ isOpen: false, accountId: null, accountName: null });
   };
 
   const getStatusBadge = (status: string) => {
@@ -186,7 +212,7 @@ export default function AccountsList() {
                                 <PencilIcon className="size-4" />
                               </Link>
                               <button
-                                onClick={() => handleDelete(account.id)}
+                                onClick={() => handleDeleteClick(account.id, account.name)}
                                 className="p-2 text-red-600 transition-colors rounded hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                               >
                                 <TrashBinIcon className="size-4" />
@@ -225,6 +251,18 @@ export default function AccountsList() {
           )}
         </ComponentCard>
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Excluir Conta"
+        message="Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita."
+        itemName={deleteDialog.accountName || undefined}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
     </>
   );
 }

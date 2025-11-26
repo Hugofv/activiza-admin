@@ -19,13 +19,15 @@ import {
 } from '../../lib/validations/accounts.schema';
 import { useState } from 'react';
 import Select from '../../components/form/Select';
+import { toast } from '../../lib/toast';
+import FormSkeleton from '@/components/ui/skeleton/FormSkeleton';
 
 export default function AccountForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   const methods = useForm({
     // @ts-expect-error - Yup schema type compatibility issue with RHF
@@ -43,6 +45,7 @@ export default function AccountForm() {
   useEffect(() => {
     if (isEdit && id) {
       const fetchAccount = async () => {
+        setIsFetching(true);
         try {
           const account = await accountsService.getById(id);
           methods.reset({
@@ -54,7 +57,10 @@ export default function AccountForm() {
             currency: account.currency,
           } as UpdateAccountFormData);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Erro ao carregar conta');
+          const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar conta';
+          toast.error('Erro ao carregar conta', errorMessage);
+        } finally {
+          setIsFetching(false);
         }
       };
       fetchAccount();
@@ -63,16 +69,18 @@ export default function AccountForm() {
 
   const onSubmit = async (data: unknown) => {
     setIsLoading(true);
-    setError(null);
     try {
       if (isEdit && id) {
         await accountsService.update(id, data as UpdateAccountFormData);
+        toast.success('Conta atualizada com sucesso!');
       } else {
         await accountsService.create(data as CreateAccountFormData);
+        toast.success('Conta criada com sucesso!');
       }
       navigate('/accounts');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar conta');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao salvar conta';
+      toast.error('Erro ao salvar conta', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -87,15 +95,12 @@ export default function AccountForm() {
       <PageBreadcrumb pageTitle={isEdit ? 'Editar Conta' : 'Nova Conta'} />
       <div className="space-y-6">
         <ComponentCard title={isEdit ? 'Editar Conta' : 'Nova Conta'}>
-          <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
-              <div className="space-y-6">
-                {error && (
-                  <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400">
-                    {error}
-                  </div>
-                )}
-
+          {isFetching ? (
+            <FormSkeleton />
+          ) : (
+            <FormProvider {...methods}>
+              <form onSubmit={methods.handleSubmit(onSubmit)}>
+                <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <FormInput
                     name="name"
@@ -191,9 +196,10 @@ export default function AccountForm() {
                     Cancelar
                   </button>
                 </div>
-              </div>
-            </form>
-          </FormProvider>
+                </div>
+              </form>
+            </FormProvider>
+          )}
         </ComponentCard>
       </div>
     </>

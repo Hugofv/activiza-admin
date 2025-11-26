@@ -16,7 +16,9 @@ import {
 } from '../../components/ui/table';
 import Badge from '../../components/ui/badge/Badge';
 import { platformUsersService, PlatformUser } from '../../lib/api/services/platformUsersService';
+import { toast } from '../../lib/toast';
 import { PencilIcon, TrashBinIcon, PlusIcon } from '../../icons';
+import ConfirmDialog from '../../components/ui/confirmDialog/ConfirmDialog';
 
 export default function PlatformUsersList() {
   const [users, setUsers] = useState<PlatformUser[]>([]);
@@ -25,6 +27,15 @@ export default function PlatformUsersList() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    userId: number | null;
+    userName: string | null;
+  }>({
+    isOpen: false,
+    userId: null,
+    userName: null,
+  });
 
   const fetchUsers = async () => {
     setIsLoading(true);
@@ -38,7 +49,9 @@ export default function PlatformUsersList() {
       setUsers(response.data);
       setTotalPages(response.totalPages);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao carregar usuários');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários';
+      setError(errorMessage);
+      toast.error('Erro ao carregar usuários', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -49,16 +62,30 @@ export default function PlatformUsersList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, searchQuery]);
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Tem certeza que deseja excluir este usuário?')) {
-      return;
-    }
+  const handleDeleteClick = (id: number, name: string) => {
+    setDeleteDialog({
+      isOpen: true,
+      userId: id,
+      userName: name,
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteDialog.userId) return;
+
     try {
-      await platformUsersService.delete(id);
+      await platformUsersService.delete(deleteDialog.userId);
+      toast.success('Usuário excluído com sucesso!');
+      setDeleteDialog({ isOpen: false, userId: null, userName: null });
       fetchUsers();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao excluir usuário');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao excluir usuário';
+      toast.error('Erro ao excluir usuário', errorMessage);
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialog({ isOpen: false, userId: null, userName: null });
   };
 
   const getRoleBadge = (role: string) => {
@@ -194,7 +221,7 @@ export default function PlatformUsersList() {
                                 <PencilIcon className="size-4" />
                               </Link>
                               <button
-                                onClick={() => handleDelete(user.id)}
+                                onClick={() => handleDeleteClick(user.id, user.name)}
                                 className="p-2 text-red-600 transition-colors rounded hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                               >
                                 <TrashBinIcon className="size-4" />
@@ -233,6 +260,18 @@ export default function PlatformUsersList() {
           )}
         </ComponentCard>
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Excluir Usuário"
+        message="Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."
+        itemName={deleteDialog.userName || undefined}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+      />
     </>
   );
 }

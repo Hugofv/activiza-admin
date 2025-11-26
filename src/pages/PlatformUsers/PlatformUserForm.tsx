@@ -19,13 +19,15 @@ import {
 } from '../../lib/validations/platformUsers.schema';
 import Select from '../../components/form/Select';
 import Checkbox from '../../components/form/input/Checkbox';
+import { toast } from '../../lib/toast';
+import FormSkeleton from '@/components/ui/skeleton/FormSkeleton';
 
 export default function PlatformUserForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
   const [isActive, setIsActive] = useState(true);
 
   const methods = useForm({
@@ -45,6 +47,7 @@ export default function PlatformUserForm() {
   useEffect(() => {
     if (isEdit && id) {
       const fetchUser = async () => {
+        setIsFetching(true);
         try {
           const user = await platformUsersService.getById(Number(id));
           methods.reset({
@@ -57,7 +60,10 @@ export default function PlatformUserForm() {
           });
           setIsActive(user.isActive);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Erro ao carregar usuário');
+          const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuário';
+          toast.error('Erro ao carregar usuário', errorMessage);
+        } finally {
+          setIsFetching(false);
         }
       };
       fetchUser();
@@ -66,7 +72,6 @@ export default function PlatformUserForm() {
 
   const onSubmit = async (data: unknown) => {
     setIsLoading(true);
-    setError(null);
     try {
       const submitData = { ...(data as Record<string, unknown>) };
       if (isEdit && !submitData.password) {
@@ -74,12 +79,15 @@ export default function PlatformUserForm() {
       }
       if (isEdit && id) {
         await platformUsersService.update(Number(id), submitData as UpdatePlatformUserFormData);
+        toast.success('Usuário atualizado com sucesso!');
       } else {
         await platformUsersService.create(submitData as CreatePlatformUserFormData);
+        toast.success('Usuário criado com sucesso!');
       }
       navigate('/platform-users');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar usuário');
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao salvar usuário';
+      toast.error('Erro ao salvar usuário', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -94,15 +102,12 @@ export default function PlatformUserForm() {
       <PageBreadcrumb pageTitle={isEdit ? 'Editar Usuário' : 'Novo Usuário'} />
       <div className="space-y-6">
         <ComponentCard title={isEdit ? 'Editar Usuário' : 'Novo Usuário'}>
-          <FormProvider {...methods}>
-            <form onSubmit={methods.handleSubmit(onSubmit)}>
-              <div className="space-y-6">
-                {error && (
-                  <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400">
-                    {error}
-                  </div>
-                )}
-
+          {isFetching ? (
+            <FormSkeleton />
+          ) : (
+            <FormProvider {...methods}>
+              <form onSubmit={methods.handleSubmit(onSubmit)}>
+                <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <FormInput
                     name="name"
@@ -197,9 +202,10 @@ export default function PlatformUserForm() {
                     Cancelar
                   </button>
                 </div>
-              </div>
-            </form>
-          </FormProvider>
+                </div>
+              </form>
+            </FormProvider>
+          )}
         </ComponentCard>
       </div>
     </>

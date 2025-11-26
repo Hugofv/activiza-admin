@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { Toaster } from "sonner";
 import "./index.css";
 import "swiper/swiper-bundle.css";
 import "flatpickr/dist/flatpickr.css";
@@ -14,6 +15,13 @@ createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <AppWrapper>
           <App />
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+            expand={true}
+            duration={4000}
+          />
         </AppWrapper>
       </AuthProvider>
     </ThemeProvider>

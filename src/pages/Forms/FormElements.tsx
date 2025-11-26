@@ -1,14 +1,14 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import DefaultInputs from "../../components/form/form-elements/DefaultInputs";
-import InputGroup from "../../components/form/form-elements/InputGroup";
-import DropzoneComponent from "../../components/form/form-elements/DropZone";
-import CheckboxComponents from "../../components/form/form-elements/CheckboxComponents";
-import RadioButtons from "../../components/form/form-elements/RadioButtons";
-import ToggleSwitch from "../../components/form/form-elements/ToggleSwitch";
-import FileInputExample from "../../components/form/form-elements/FileInputExample";
-import SelectInputs from "../../components/form/form-elements/SelectInputs";
-import TextAreaInput from "../../components/form/form-elements/TextAreaInput";
-import InputStates from "../../components/form/form-elements/InputStates";
+import DefaultInputs from "../../components/form/formElements/DefaultInputs";
+import InputGroup from "../../components/form/formElements/InputGroup";
+import DropzoneComponent from "../../components/form/formElements/DropZone";
+import CheckboxComponents from "../../components/form/formElements/CheckboxComponents";
+import RadioButtons from "../../components/form/formElements/RadioButtons";
+import ToggleSwitch from "../../components/form/formElements/ToggleSwitch";
+import FileInputExample from "../../components/form/formElements/FileInputExample";
+import SelectInputs from "../../components/form/formElements/SelectInputs";
+import TextAreaInput from "../../components/form/formElements/TextAreaInput";
+import InputStates from "../../components/form/formElements/InputStates";
 import PageMeta from "../../components/common/PageMeta";
 
 export default function FormElements() {

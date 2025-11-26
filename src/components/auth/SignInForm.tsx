@@ -10,12 +10,12 @@ import {
   signInSchema,
   SignInFormData,
 } from '../../lib/validations/auth.schema';
+import { toast } from '../../lib/toast';
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -28,7 +28,6 @@ export default function SignInForm() {
   });
 
   const onSubmit = async (data: SignInFormData) => {
-    setError(null);
     setIsLoading(true);
 
     try {
@@ -36,12 +35,13 @@ export default function SignInForm() {
         email: data.email.trim(),
         password: data.password,
       });
+      toast.success('Login realizado com sucesso!', 'Redirecionando...');
       // Redirect to home page on successful login
       navigate('/', { replace: true });
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Invalid email or password';
-      setError(errorMessage);
+        err instanceof Error ? err.message : 'Email ou senha inválidos';
+      toast.error('Erro ao fazer login', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -63,11 +63,6 @@ export default function SignInForm() {
             <FormProvider {...methods}>
               <form onSubmit={methods.handleSubmit(onSubmit)}>
                 <div className='space-y-6'>
-                  {error && (
-                    <div className='p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'>
-                      {error}
-                    </div>
-                  )}
                   <FormInput
                     name='email'
                     label='E-mail'
