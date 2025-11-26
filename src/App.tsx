@@ -24,6 +24,10 @@ import AccountsList from "./pages/Accounts/AccountsList";
 import AccountForm from "./pages/Accounts/AccountForm";
 import PlatformUsersList from "./pages/PlatformUsers/PlatformUsersList";
 import PlatformUserForm from "./pages/PlatformUsers/PlatformUserForm";
+import FeaturesList from "./pages/Features/FeaturesList";
+import FeatureForm from "./pages/Features/FeatureForm";
+import PlansList from "./pages/Plans/PlansList";
+import PlanForm from "./pages/Plans/PlanForm";
 
 export default function App() {
   return (
@@ -91,6 +95,16 @@ export default function App() {
             <Route path="/platform-users" element={<PlatformUsersList />} />
             <Route path="/platform-users/new" element={<PlatformUserForm />} />
             <Route path="/platform-users/:id/edit" element={<PlatformUserForm />} />
+
+            {/* Features */}
+            <Route path="/features" element={<FeaturesList />} />
+            <Route path="/features/new" element={<FeatureForm />} />
+            <Route path="/features/:id/edit" element={<FeatureForm />} />
+
+            {/* Plans */}
+            <Route path="/plans" element={<PlansList />} />
+            <Route path="/plans/new" element={<PlanForm />} />
+            <Route path="/plans/:id/edit" element={<PlanForm />} />
           </Route>
 
           {/* Fallback Route */}

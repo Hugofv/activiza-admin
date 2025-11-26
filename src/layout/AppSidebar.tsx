@@ -9,6 +9,8 @@ import {
   UserCircleIcon,
   GroupIcon,
   BoxIcon,
+  BoltIcon,
+  DollarLineIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 
@@ -34,6 +36,16 @@ const navItems: NavItem[] = [
     icon: <GroupIcon />,
     name: "Usuários",
     path: "/platform-users",
+  },
+  {
+    icon: <BoltIcon />,
+    name: "Features",
+    path: "/features",
+  },
+  {
+    icon: <DollarLineIcon />,
+    name: "Planos",
+    path: "/plans",
   },
   {
     icon: <UserCircleIcon />,
