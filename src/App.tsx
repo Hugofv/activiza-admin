@@ -30,6 +30,8 @@ import PlansList from "./pages/Plans/PlansList";
 import PlanForm from "./pages/Plans/PlanForm";
 import QualificationsList from "./pages/Qualifications/QualificationsList";
 import QualificationForm from "./pages/Qualifications/QualificationForm";
+import ModulesList from "./pages/Modules/ModulesList";
+import ModuleForm from "./pages/Modules/ModuleForm";
 
 export default function App() {
   return (
@@ -112,6 +114,11 @@ export default function App() {
             <Route path="/qualifications" element={<QualificationsList />} />
             <Route path="/qualifications/new" element={<QualificationForm />} />
             <Route path="/qualifications/:id/edit" element={<QualificationForm />} />
+
+            {/* Modules */}
+            <Route path="/modules" element={<ModulesList />} />
+            <Route path="/modules/new" element={<ModuleForm />} />
+            <Route path="/modules/:id/edit" element={<ModuleForm />} />
           </Route>
 
           {/* Fallback Route */}

@@ -10,12 +10,21 @@ export interface FeaturePrice {
   currency: 'BRL' | 'USD' | 'EUR' | 'GBP';
 }
 
+export interface FeatureMeta {
+  translations?: {
+    [locale: string]: string;
+  };
+  [key: string]: unknown;
+}
+
 export interface Feature {
   id: number;
   name: string;
   description?: string;
   code: string;
+  moduleId?: number;
   prices: FeaturePrice[];
+  meta?: FeatureMeta;
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -25,7 +34,9 @@ export interface CreateFeatureData {
   name: string;
   description?: string;
   code: string;
+  moduleId?: number;
   prices: FeaturePrice[];
+  meta?: FeatureMeta;
   isActive?: boolean;
 }
 
@@ -33,7 +44,9 @@ export interface UpdateFeatureData {
   name?: string;
   description?: string;
   code?: string;
+  moduleId?: number;
   prices?: FeaturePrice[];
+  meta?: FeatureMeta;
   isActive?: boolean;
 }
 

@@ -3,17 +3,24 @@
  */
 
 import * as yup from 'yup';
+import { TranslationItem, translationItemSchema, MetaFormData } from './common.schema';
 
 export interface FeaturePriceFormData {
   price: number;
   currency: 'BRL' | 'USD' | 'EUR' | 'GBP';
 }
 
+export interface FeatureMetaFormData extends MetaFormData {
+  translations?: TranslationItem[];
+}
+
 export interface CreateFeatureFormData {
   name: string;
   description?: string;
   code: string;
+  moduleId?: number;
   prices: FeaturePriceFormData[];
+  meta?: FeatureMetaFormData;
   isActive: boolean;
 }
 
@@ -21,7 +28,9 @@ export interface UpdateFeatureFormData {
   name?: string;
   description?: string;
   code?: string;
+  moduleId?: number;
   prices?: FeaturePriceFormData[];
+  meta?: FeatureMetaFormData;
   isActive?: boolean;
 }
 
@@ -44,11 +53,17 @@ export const createFeatureSchema = yup.object({
     .string()
     .required('Código é obrigatório')
     .matches(/^[A-Z_]+$/, 'Código deve conter apenas letras maiúsculas e underscores'),
+  moduleId: yup.number().optional(),
   prices: yup
     .array()
     .of(featurePriceSchema)
     .required('Preços são obrigatórios')
     .min(1, 'Funcionalidade deve ter pelo menos um preço'),
+  meta: yup
+    .object({
+      translations: yup.array().of(translationItemSchema).optional(),
+    })
+    .optional(),
   isActive: yup.boolean().default(true),
 });
 
@@ -59,10 +74,16 @@ export const updateFeatureSchema = yup.object({
     .string()
     .matches(/^[A-Z_]+$/, 'Código deve conter apenas letras maiúsculas e underscores')
     .optional(),
+  moduleId: yup.number().optional(),
   prices: yup
     .array()
     .of(featurePriceSchema)
     .min(1, 'Funcionalidade deve ter pelo menos um preço')
+    .optional(),
+  meta: yup
+    .object({
+      translations: yup.array().of(translationItemSchema).optional(),
+    })
     .optional(),
   isActive: yup.boolean().optional(),
 });

@@ -11,6 +11,7 @@ import ComponentCard from '@/components/common/ComponentCard';
 import PageMeta from '@/components/common/PageMeta';
 import FormInput from '@/components/form/input/FormInput';
 import { featuresService } from '@/lib/api/services/featuresService';
+import { modulesService, Module } from '@/lib/api/services/modulesService';
 import {
   createFeatureSchema,
   updateFeatureSchema,
@@ -22,6 +23,7 @@ import FormSkeleton from '@/components/ui/skeleton/FormSkeleton';
 import Checkbox from '@/components/form/input/Checkbox';
 import Select from '@/components/form/Select';
 import MoneyInput from '@/components/form/input/MoneyInput';
+import TranslationForm from '@/components/organisms/TranslationForm';
 import { PlusIcon, TrashBinIcon } from '@/icons';
 
 export default function FeatureForm() {
@@ -31,6 +33,7 @@ export default function FeatureForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [isActive, setIsActive] = useState(true);
+  const [availableModules, setAvailableModules] = useState<Module[]>([]);
 
   const methods = useForm({
     // @ts-expect-error - Yup schema type compatibility issue with RHF
@@ -39,7 +42,11 @@ export default function FeatureForm() {
       name: '',
       description: '',
       code: '',
+      moduleId: undefined,
       prices: [],
+      meta: {
+        translations: [],
+      },
       isActive: true,
     },
   });
@@ -50,19 +57,43 @@ export default function FeatureForm() {
   });
 
   useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        const response = await modulesService.getAll({ limit: 1000 });
+        setAvailableModules(response.data.filter((m) => m.isActive));
+      } catch {
+        // Silently fail, modules are optional
+      }
+    };
+    fetchModules();
+  }, []);
+
+  useEffect(() => {
     if (isEdit && id) {
       const fetchFeature = async () => {
         setIsFetching(true);
         try {
           const feature = await featuresService.getById(Number(id));
           const prices = feature.prices && feature.prices.length > 0 ? feature.prices : [{ price: 0, currency: 'BRL' }];
+          
+          // Convert translations object to array format
+          const translationsObj = feature.meta?.translations || {};
+          const translationsArray: { locale: string; value: string }[] = Object.entries(translationsObj).map(([locale, value]) => ({
+            locale,
+            value: value as string,
+          }));
+          
           methods.reset({
             name: feature.name,
             description: feature.description || '',
             code: feature.code,
+            moduleId: feature.moduleId,
             prices,
+            meta: {
+              translations: translationsArray,
+            },
             isActive: feature.isActive,
-          } as UpdateFeatureFormData);
+          } as any);
           setIsActive(feature.isActive);
         } catch (err) {
           const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar feature';
@@ -83,11 +114,45 @@ export default function FeatureForm() {
   const onSubmit = async (data: unknown) => {
     setIsLoading(true);
     try {
+      const formData = data as CreateFeatureFormData | UpdateFeatureFormData;
+      
+      // Build meta object with translations from array
+      const translations: { [key: string]: string } = {};
+      if (formData.meta?.translations && Array.isArray(formData.meta.translations)) {
+        formData.meta.translations.forEach((item) => {
+          if (item && item.locale && item.value && item.value.trim()) {
+            translations[item.locale] = item.value.trim();
+          }
+        });
+      }
+
       if (isEdit && id) {
-        await featuresService.update(Number(id), data as UpdateFeatureFormData);
+        const updateData = {
+          name: formData.name,
+          description: formData.description,
+          code: formData.code,
+          moduleId: formData.moduleId,
+          prices: formData.prices,
+          isActive: formData.isActive,
+          meta: {
+            translations: Object.keys(translations).length > 0 ? translations : undefined,
+          },
+        };
+        await featuresService.update(Number(id), updateData);
         toast.success('Funcionalidade atualizada com sucesso!');
       } else {
-        await featuresService.create(data as CreateFeatureFormData);
+        const createData = {
+          name: formData.name!,
+          description: formData.description,
+          code: formData.code!,
+          moduleId: formData.moduleId,
+          prices: formData.prices!,
+          isActive: formData.isActive,
+          meta: {
+            translations: Object.keys(translations).length > 0 ? translations : undefined,
+          },
+        };
+        await featuresService.create(createData);
         toast.success('Funcionalidade criada com sucesso!');
       }
       navigate('/features');
@@ -140,6 +205,28 @@ export default function FeatureForm() {
                     placeholder="Descrição da funcionalidade"
                     disabled={isLoading}
                   />
+
+                  <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Módulo
+                    </label>
+                    <Select
+                      options={[
+                        { value: '', label: 'Nenhum módulo' },
+                        ...availableModules.map((module) => ({
+                          value: String(module.id),
+                          label: module.name,
+                        })),
+                      ]}
+                      placeholder="Selecione um módulo"
+                      onChange={(value) => {
+                        methods.setValue('moduleId', value ? Number(value) : undefined);
+                      }}
+                      defaultValue={methods.watch('moduleId') ? String(methods.watch('moduleId')) : ''}
+                    />
+                  </div>
+
+                  <TranslationForm disabled={isLoading} />
 
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div className="flex items-center justify-between mb-4">

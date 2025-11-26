@@ -54,6 +54,11 @@ const navItems: NavItem[] = [
     path: "/qualifications",
   },
   {
+    icon: <BoxIcon />,
+    name: "Módulos",
+    path: "/modules",
+  },
+  {
     icon: <UserCircleIcon />,
     name: "Perfil",
     path: "/profile",

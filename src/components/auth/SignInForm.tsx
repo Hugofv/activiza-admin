@@ -94,19 +94,19 @@ export default function SignInForm() {
                   </div>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-3'>
-                      <Checkbox checked={isChecked} onChange={setIsChecked} />
+                    <Checkbox checked={isChecked} onChange={setIsChecked} />
                       <span className='block font-normal text-gray-700 text-theme-sm dark:text-gray-400'>
                         Manter-me conectado
-                      </span>
-                    </div>
-                    <Link
+                    </span>
+                  </div>
+                  <Link
                       to='/reset-password'
                       className='text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400'
-                    >
+                  >
                       Esqueceu sua senha?
-                    </Link>
-                  </div>
-                  <div>
+                  </Link>
+                </div>
+                <div>
                     <button
                       type='submit'
                       className='w-full inline-flex items-center justify-center gap-2 rounded-lg transition px-4 py-3 text-sm bg-brand-500 text-white shadow-theme-xs hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed disabled:opacity-50'
@@ -114,9 +114,9 @@ export default function SignInForm() {
                     >
                       {isLoading ? 'Entrando...' : 'Entrar'}
                     </button>
-                  </div>
                 </div>
-              </form>
+              </div>
+            </form>
             </FormProvider>
           </div>
         </div>
