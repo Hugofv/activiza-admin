@@ -5,18 +5,56 @@
 import apiClient from '../client';
 import { ApiResponse, PaginatedResponse } from '../types';
 
-export interface PlanFeature {
-  featureId: number;
-  featureName?: string;
+export interface PlanFeaturePrice {
+  currency: string; // e.g., "BRL", "USD", "EUR"
   price: number;
+  isDefault: boolean;
+}
+
+export interface PlanFeatureConfig {
+  featureId: number;
+  isEnabled: boolean;
+  operationLimit?: number | null; // null = unlimited
+  resetPeriod: 'MONTHLY' | 'YEARLY' | 'LIFETIME';
+  prices?: PlanFeaturePrice[];
+}
+
+export interface PlanFeature {
+  id: number;
+  featureId: number;
+  feature?: {
+    id: number;
+    key: string;
+    name: string;
+    description?: string;
+  };
+  isEnabled: boolean;
+  operationLimit?: number | null;
+  resetPeriod: 'MONTHLY' | 'YEARLY' | 'LIFETIME';
+  prices?: PlanFeaturePrice[];
+}
+
+export interface PlanPrice {
+  currency: string;
+  price: number;
+  isDefault: boolean;
 }
 
 export interface Plan {
   id: number;
   name: string;
   description?: string;
+  billingPeriod: 'MONTHLY' | 'YEARLY';
   isActive: boolean;
+  isPublic: boolean;
+  sortOrder: number;
+  maxOperations?: number | null;
+  maxClients?: number | null;
+  maxUsers?: number | null;
+  maxStorage?: number | null; // in MB
+  prices?: PlanPrice[]; // Calculated from enabled features
   features: PlanFeature[];
+  meta?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -24,15 +62,33 @@ export interface Plan {
 export interface CreatePlanData {
   name: string;
   description?: string;
+  billingPeriod?: 'MONTHLY' | 'YEARLY';
   isActive?: boolean;
-  features: PlanFeature[];
+  isPublic?: boolean;
+  sortOrder?: number;
+  maxOperations?: number | null;
+  maxClients?: number | null;
+  maxUsers?: number | null;
+  maxStorage?: number | null;
+  featureIds?: number[]; // Simple array - uses defaults
+  features?: PlanFeatureConfig[]; // Detailed configuration with limits and prices
+  meta?: Record<string, unknown>;
 }
 
 export interface UpdatePlanData {
   name?: string;
   description?: string;
+  billingPeriod?: 'MONTHLY' | 'YEARLY';
   isActive?: boolean;
-  features?: PlanFeature[];
+  isPublic?: boolean;
+  sortOrder?: number;
+  maxOperations?: number | null;
+  maxClients?: number | null;
+  maxUsers?: number | null;
+  maxStorage?: number | null;
+  featureIds?: number[];
+  features?: PlanFeatureConfig[];
+  meta?: Record<string, unknown>;
 }
 
 export interface PlansListParams {
@@ -40,6 +96,7 @@ export interface PlansListParams {
   limit?: number;
   q?: string;
   isActive?: boolean;
+  isPublic?: boolean;
 }
 
 const PLANS_API_URL = '/api/admin/plans';

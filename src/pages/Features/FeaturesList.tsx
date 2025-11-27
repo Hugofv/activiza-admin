@@ -173,25 +173,25 @@ export default function FeaturesList() {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Código da Funcionalidade
+                        Chave
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
-                        Descrição da Funcionalidade
+                        Descrição
+                      </TableCell>
+                      <TableCell
+                        isHeader
+                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                      >
+                        Categoria
                       </TableCell>
                       <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                       >
                         Módulo
-                      </TableCell>
-                      <TableCell
-                        isHeader
-                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                      >
-                        Preços
                       </TableCell>
                       <TableCell
                         isHeader
@@ -215,31 +215,18 @@ export default function FeaturesList() {
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
                           <code className="px-2 py-1 text-xs bg-gray-100 rounded dark:bg-gray-800">
-                            {feature.code}
+                            {feature.key}
                           </code>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
                           {feature.description || '-'}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
-                          {feature.moduleId ? (
-                            modules.find((m) => m.id === feature.moduleId)?.name || `ID: ${feature.moduleId}`
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
+                          {feature.category || <span className="text-gray-400">-</span>}
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
-                          {feature.prices && feature.prices.length > 0 ? (
-                            <div className="flex flex-col gap-1">
-                              {feature.prices.map((price, idx) => {
-                                const currencySymbol = price.currency === 'BRL' ? 'R$' : price.currency === 'USD' ? '$' : price.currency === 'EUR' ? '€' : '£';
-                                return (
-                                  <span key={idx} className="font-medium">
-                                    {currencySymbol} {price.price.toFixed(2).replace('.', ',')}
-                                  </span>
-                                );
-                              })}
-                            </div>
+                          {feature.module ? (
+                            feature.module.name
                           ) : (
                             <span className="text-gray-400">-</span>
                           )}

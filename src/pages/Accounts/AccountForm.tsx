@@ -18,8 +18,9 @@ import {
   UpdateAccountFormData,
 } from '../../lib/validations/accounts.schema';
 import { useState } from 'react';
-import Select from '../../components/form/Select';
+import Autocomplete from '../../components/form/input/Autocomplete';
 import { toast } from '../../lib/toast';
+import { CURRENCIES } from '../../config/constants';
 import FormSkeleton from '@/components/ui/skeleton/FormSkeleton';
 
 export default function AccountForm() {
@@ -142,30 +143,32 @@ export default function AccountForm() {
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                       Status
                     </label>
-                    <Select
+                    <Autocomplete
                       options={[
                         { value: 'ACTIVE', label: 'Ativo' },
                         { value: 'INACTIVE', label: 'Inativo' },
                       ]}
-                      placeholder="Selecione o status"
+                      placeholder="Digite ou selecione o status..."
+                      disabled={isLoading}
+                      allowCustom={false}
+                      value={methods.watch('status') || ''}
                       onChange={(value) => methods.setValue('status', value as 'ACTIVE' | 'INACTIVE')}
-                      defaultValue={methods.watch('status')}
                     />
                   </div>
                   <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                       Moeda
                     </label>
-                    <Select
-                      options={[
-                        { value: 'BRL', label: 'BRL' },
-                        { value: 'USD', label: 'USD' },
-                        { value: 'EUR', label: 'EUR' },
-                        { value: 'GBP', label: 'GBP' },
-                      ]}
-                      placeholder="Selecione a moeda"
+                    <Autocomplete
+                      options={CURRENCIES.map((c) => ({
+                        value: c.value,
+                        label: c.label,
+                      }))}
+                      placeholder="Digite ou selecione a moeda..."
+                      disabled={isLoading}
+                      allowCustom={false}
+                      value={methods.watch('currency') || ''}
                       onChange={(value) => methods.setValue('currency', value as 'BRL' | 'USD' | 'EUR' | 'GBP')}
-                      defaultValue={methods.watch('currency')}
                     />
                   </div>
                 </div>

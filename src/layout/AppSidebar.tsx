@@ -39,8 +39,13 @@ const navItems: NavItem[] = [
     path: "/platform-users",
   },
   {
+    icon: <BoxIcon />,
+    name: "Módulos",
+    path: "/modules",
+  },
+  {
     icon: <BoltIcon />,
-    name: "Features",
+    name: "Funcionalidades",
     path: "/features",
   },
   {
@@ -52,11 +57,6 @@ const navItems: NavItem[] = [
     icon: <CheckCircleIcon />,
     name: "Qualificações",
     path: "/qualifications",
-  },
-  {
-    icon: <BoxIcon />,
-    name: "Módulos",
-    path: "/modules",
   },
   {
     icon: <UserCircleIcon />,

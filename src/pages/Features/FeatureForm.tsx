@@ -3,7 +3,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useForm, FormProvider, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigate, useParams } from 'react-router';
 import PageBreadcrumb from '@/components/common/PageBreadCrumb';
@@ -21,10 +21,7 @@ import {
 import { toast } from '@/lib/toast';
 import FormSkeleton from '@/components/ui/skeleton/FormSkeleton';
 import Checkbox from '@/components/form/input/Checkbox';
-import Select from '@/components/form/Select';
-import MoneyInput from '@/components/form/input/MoneyInput';
-import TranslationForm from '@/components/organisms/TranslationForm';
-import { PlusIcon, TrashBinIcon } from '@/icons';
+import Autocomplete from '@/components/form/input/Autocomplete';
 
 export default function FeatureForm() {
   const { id } = useParams<{ id: string }>();
@@ -35,25 +32,18 @@ export default function FeatureForm() {
   const [isActive, setIsActive] = useState(true);
   const [availableModules, setAvailableModules] = useState<Module[]>([]);
 
-  const methods = useForm({
+  const methods = useForm<CreateFeatureFormData | UpdateFeatureFormData>({
     // @ts-expect-error - Yup schema type compatibility issue with RHF
     resolver: yupResolver(isEdit ? updateFeatureSchema : createFeatureSchema),
     defaultValues: {
+      key: '',
       name: '',
       description: '',
-      code: '',
-      moduleId: undefined,
-      prices: [],
-      meta: {
-        translations: [],
-      },
+      category: '',
+      module: undefined,
       isActive: true,
+      sortOrder: 0,
     },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control: methods.control,
-    name: 'prices',
   });
 
   useEffect(() => {
@@ -74,25 +64,17 @@ export default function FeatureForm() {
         setIsFetching(true);
         try {
           const feature = await featuresService.getById(Number(id));
-          const prices = feature.prices && feature.prices.length > 0 ? feature.prices : [{ price: 0, currency: 'BRL' }];
-          
-          // Convert translations object to array format
-          const translationsObj = feature.meta?.translations || {};
-          const translationsArray: { locale: string; value: string }[] = Object.entries(translationsObj).map(([locale, value]) => ({
-            locale,
-            value: value as string,
-          }));
           
           methods.reset({
+            key: feature.key,
             name: feature.name,
             description: feature.description || '',
-            code: feature.code,
-            moduleId: feature.moduleId,
-            prices,
-            meta: {
-              translations: translationsArray,
-            },
+            category: feature.category || '',
+            module: feature.module
+              ? { value: feature.module.id, label: feature.module.name }
+              : undefined,
             isActive: feature.isActive,
+            sortOrder: feature.sortOrder || 0,
           } as CreateFeatureFormData);
           setIsActive(feature.isActive);
         } catch (err) {
@@ -111,41 +93,26 @@ export default function FeatureForm() {
     try {
       const formData = data as CreateFeatureFormData | UpdateFeatureFormData;
       
-      // Build meta object with translations from array
-      const translations: { [key: string]: string } = {};
-      if (formData.meta?.translations && Array.isArray(formData.meta.translations)) {
-        formData.meta.translations.forEach((item) => {
-          if (item && item.locale && item.value && item.value.trim()) {
-            translations[item.locale] = item.value.trim();
-          }
-        });
-      }
-
       if (isEdit && id) {
-        const updateData = {
+        const updateData: UpdateFeatureFormData = {
           name: formData.name,
           description: formData.description,
-          code: formData.code,
-          moduleId: formData.moduleId,
-          prices: formData.prices,
+          category: formData.category,
+          module: formData.module,
           isActive: formData.isActive,
-          meta: {
-            translations: Object.keys(translations).length > 0 ? translations : undefined,
-          },
+          sortOrder: formData.sortOrder,
         };
         await featuresService.update(Number(id), updateData);
         toast.success('Funcionalidade atualizada com sucesso!');
       } else {
-        const createData = {
+        const createData: CreateFeatureFormData = {
+          key: (formData as CreateFeatureFormData).key!,
           name: formData.name!,
           description: formData.description,
-          code: formData.code!,
-          moduleId: formData.moduleId,
-          prices: formData.prices!,
+          category: formData.category,
+          module: formData.module,
           isActive: formData.isActive,
-          meta: {
-            translations: Object.keys(translations).length > 0 ? translations : undefined,
-          },
+          sortOrder: formData.sortOrder,
         };
         await featuresService.create(createData);
         toast.success('Funcionalidade criada com sucesso!');
@@ -174,6 +141,15 @@ export default function FeatureForm() {
             <FormProvider {...methods}>
               <form onSubmit={methods.handleSubmit(onSubmit)}>
                 <div className="space-y-6">
+                  <FormInput
+                    name="key"
+                    label="Chave"
+                    type="text"
+                    placeholder="ex: loan_module, advanced_reports"
+                    required
+                    disabled={isLoading || isEdit}
+                  />
+
                   <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <FormInput
                       name="name"
@@ -184,11 +160,10 @@ export default function FeatureForm() {
                       disabled={isLoading}
                     />
                     <FormInput
-                      name="code"
-                      label="Código"
+                      name="category"
+                      label="Categoria"
                       type="text"
-                      placeholder="FEATURE_CODE"
-                      required
+                      placeholder="ex: reports, integrations, automation"
                       disabled={isLoading}
                     />
                   </div>
@@ -205,7 +180,7 @@ export default function FeatureForm() {
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                       Módulo
                     </label>
-                    <Select
+                    <Autocomplete
                       options={[
                         { value: '', label: 'Nenhum módulo' },
                         ...availableModules.map((module) => ({
@@ -213,111 +188,38 @@ export default function FeatureForm() {
                           label: module.name,
                         })),
                       ]}
-                      placeholder="Selecione um módulo"
+                      placeholder="Digite ou selecione um módulo..."
+                      disabled={isLoading}
+                      allowCustom={false}
+                      value={
+                        methods.watch('module')
+                          ? String(methods.watch('module')?.value || '')
+                          : ''
+                      }
                       onChange={(value) => {
-                        methods.setValue('moduleId', value ? Number(value) : undefined);
+                        if (value && value !== '') {
+                          const moduleId = Number(value);
+                          const selectedModule = availableModules.find((m) => m.id === moduleId);
+                          if (selectedModule) {
+                            methods.setValue('module', {
+                              value: selectedModule.id,
+                              label: selectedModule.name,
+                            });
+                          }
+                        } else {
+                          methods.setValue('module', undefined);
+                        }
                       }}
-                      defaultValue={methods.watch('moduleId') ? String(methods.watch('moduleId')) : ''}
                     />
                   </div>
 
-                  <TranslationForm disabled={isLoading} />
-
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-                        Preços da Funcionalidade
-                      </h3>
-                      <button
-                        type="button"
-                        onClick={() => append({ price: 0, currency: 'BRL' })}
-                        disabled={isLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-colors bg-brand-500 rounded-lg hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <PlusIcon className="size-4" />
-                        Adicionar Preço
-                      </button>
-                    </div>
-
-                    {fields.length === 0 ? (
-                      <div className="p-4 text-sm text-center text-gray-500 bg-gray-50 rounded-lg dark:bg-gray-800 dark:text-gray-400">
-                        Nenhum preço adicionado. Clique em "Adicionar Preço" para começar.
-                      </div>
-                    ) : (
-                      <div className="space-y-4">
-                        {fields.map((field, index) => {
-                          const selectedCurrency = methods.watch(`prices.${index}.currency`) || 'BRL';
-                          const currencyPrefix = selectedCurrency === 'BRL' ? 'R$ ' : selectedCurrency === 'USD' ? '$ ' : selectedCurrency === 'EUR' ? '€ ' : '£ ';
-
-                          return (
-                            <div
-                              key={field.id}
-                              className="p-4 border border-gray-200 rounded-lg dark:border-gray-700"
-                            >
-                              <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_200px_auto] items-end">
-                                <div>
-                                  <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Moeda <span className="text-error-500">*</span>
-                                  </label>
-                                  <Select
-                                    options={[
-                                      { value: 'BRL', label: 'BRL' },
-                                      { value: 'USD', label: 'USD' },
-                                      { value: 'EUR', label: 'EUR' },
-                                      { value: 'GBP', label: 'GBP' },
-                                    ]}
-                                    placeholder="Selecione a moeda"
-                                    onChange={(value) =>
-                                      methods.setValue(`prices.${index}.currency`, value as 'BRL' | 'USD' | 'EUR' | 'GBP')
-                                    }
-                                    defaultValue={selectedCurrency}
-                                  />
-                                </div>
-                                <div>
-                                  <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Preço <span className="text-error-500">*</span>
-                                  </label>
-                                  <Controller
-                                    name={`prices.${index}.price`}
-                                    control={methods.control}
-                                    render={({ field: priceField, fieldState }) => (
-                                      <>
-                                        <MoneyInput
-                                          value={priceField.value}
-                                          onChange={(value) => priceField.onChange(value)}
-                                          onBlur={priceField.onBlur}
-                                          placeholder="0,00"
-                                          disabled={isLoading}
-                                          prefix={currencyPrefix}
-                                          decimalSeparator=","
-                                          thousandSeparator="."
-                                          decimalScale={2}
-                                          fixedDecimalScale
-                                        />
-                                        {fieldState.error && (
-                                          <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                                            {fieldState.error.message}
-                                          </p>
-                                        )}
-                                      </>
-                                    )}
-                                  />
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => remove(index)}
-                                  disabled={isLoading}
-                                  className="p-2 text-red-600 transition-colors rounded hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 disabled:opacity-50"
-                                >
-                                  <TrashBinIcon className="size-5" />
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
+                  <FormInput
+                    name="sortOrder"
+                    label="Ordem de Exibição"
+                    type="number"
+                    placeholder="0"
+                    disabled={isLoading}
+                  />
 
                   <div className="flex items-center gap-3">
                     <Checkbox
@@ -335,7 +237,7 @@ export default function FeatureForm() {
                   <div className="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                     <button
                       type="submit"
-                      disabled={isLoading || fields.length === 0}
+                      disabled={isLoading}
                       className="px-6 py-2 text-sm font-medium text-white transition-colors bg-brand-500 rounded-lg hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isLoading ? 'Salvando...' : 'Salvar'}
@@ -357,4 +259,3 @@ export default function FeatureForm() {
     </>
   );
 }
-

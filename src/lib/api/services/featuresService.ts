@@ -5,55 +5,56 @@
 import apiClient from '../client';
 import { ApiResponse, PaginatedResponse } from '../types';
 
-export interface FeaturePrice {
-  price: number;
-  currency: 'BRL' | 'USD' | 'EUR' | 'GBP';
-}
-
-export interface FeatureMeta {
-  translations?: {
-    [locale: string]: string;
-  };
-  [key: string]: unknown;
+export interface ModuleOption {
+  value: number;
+  label: string;
 }
 
 export interface Feature {
   id: number;
+  key: string; // Unique identifier (e.g., "loan_module", "advanced_reports")
   name: string;
   description?: string;
-  code: string;
+  category?: string; // e.g., "reports", "integrations", "automation"
   moduleId?: number;
-  prices: FeaturePrice[];
-  meta?: FeatureMeta;
+  module?: {
+    id: number;
+    key: string;
+    name: string;
+  };
   isActive: boolean;
+  sortOrder: number;
+  meta?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface CreateFeatureData {
+  key: string;
   name: string;
   description?: string;
-  code: string;
-  moduleId?: number;
-  prices: FeaturePrice[];
-  meta?: FeatureMeta;
+  category?: string;
+  module?: ModuleOption; // For autocomplete selection
   isActive?: boolean;
+  sortOrder?: number;
+  meta?: Record<string, unknown>;
 }
 
 export interface UpdateFeatureData {
   name?: string;
   description?: string;
-  code?: string;
-  moduleId?: number;
-  prices?: FeaturePrice[];
-  meta?: FeatureMeta;
+  category?: string;
+  module?: ModuleOption;
   isActive?: boolean;
+  sortOrder?: number;
+  meta?: Record<string, unknown>;
 }
 
 export interface FeaturesListParams {
   page?: number;
   limit?: number;
   q?: string;
+  category?: string;
   isActive?: boolean;
 }
 

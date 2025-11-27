@@ -17,7 +17,7 @@ import {
   CreatePlatformUserFormData,
   UpdatePlatformUserFormData,
 } from '../../lib/validations/platformUsers.schema';
-import Select from '../../components/form/Select';
+import Autocomplete from '../../components/form/input/Autocomplete';
 import Checkbox from '../../components/form/input/Checkbox';
 import { toast } from '../../lib/toast';
 import FormSkeleton from '@/components/ui/skeleton/FormSkeleton';
@@ -139,16 +139,18 @@ export default function PlatformUserForm() {
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                       Perfil <span className="text-error-500">*</span>
                     </label>
-                    <Select
+                    <Autocomplete
                       options={[
                         { value: 'owner', label: 'Proprietário' },
                         { value: 'admin', label: 'Administrador' },
                         { value: 'agent', label: 'Agente' },
                         { value: 'viewer', label: 'Visualizador' },
                       ]}
-                      placeholder="Selecione o perfil"
+                      placeholder="Digite ou selecione o perfil..."
+                      disabled={isLoading}
+                      allowCustom={false}
+                      value={methods.watch('role') || ''}
                       onChange={(value) => methods.setValue('role', value as 'owner' | 'admin' | 'agent' | 'viewer')}
-                      defaultValue={methods.watch('role')}
                     />
                   </div>
                 </div>
