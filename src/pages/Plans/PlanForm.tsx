@@ -55,7 +55,7 @@ export default function PlanForm() {
     const fetchFeatures = async () => {
       try {
         const response = await featuresService.getAll({ limit: 1000 });
-        setAvailableFeatures(response.data.filter((f) => f.isActive));
+        setAvailableFeatures(response.results.filter((f: Feature) => f.isActive));
       } catch {
         toast.error('Erro ao carregar features', 'Não foi possível carregar a lista de features');
       }

@@ -195,7 +195,7 @@ export default function ModulesList() {
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">
                           <code className="px-2 py-1 text-xs bg-gray-100 rounded dark:bg-gray-800">
-                            {module.code}
+                            {module.key}
                           </code>
                         </TableCell>
                         <TableCell className="px-5 py-4 text-sm text-gray-800 dark:text-white/90">

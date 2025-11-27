@@ -45,7 +45,7 @@ export default function AccountsList() {
         limit: 20,
         q: searchQuery || undefined,
       });
-      setAccounts(response.data);
+      setAccounts(response.results);
       setTotalPages(response.totalPages);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar contas';

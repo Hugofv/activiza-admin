@@ -5,6 +5,7 @@
 
 import React from 'react';
 import Select, { StylesConfig, GroupBase, Theme } from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 import { SingleValue } from 'react-select';
 
 interface Option {
@@ -50,85 +51,35 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
         ? 'var(--color-brand-500)'
         : 'var(--color-gray-300)',
       boxShadow: state.isFocused ? '0 0 0 2px var(--color-brand-500)' : 'none',
-      backgroundColor: 'transparent',
       '&:hover': {
         borderColor: state.isFocused
           ? 'var(--color-brand-500)'
           : 'var(--color-gray-400)',
       },
-      '@media (prefers-color-scheme: dark)': {
-        backgroundColor: 'rgb(31 41 55)',
-        borderColor: state.isFocused
-          ? 'var(--color-brand-800)'
-          : 'rgb(55 65 81)',
-      },
     }),
     input: (provided) => ({
       ...provided,
-      color: 'var(--color-gray-800)',
-      '@media (prefers-color-scheme: dark)': {
-        color: 'rgb(255 255 255 / 0.9)',
-      },
     }),
     placeholder: (provided) => ({
       ...provided,
-      color: 'var(--color-gray-400)',
-      '@media (prefers-color-scheme: dark)': {
-        color: 'rgb(156 163 175)',
-      },
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: 'var(--color-gray-800)',
-      '@media (prefers-color-scheme: dark)': {
-        color: 'rgb(255 255 255 / 0.9)',
-      },
     }),
     menu: (provided) => ({
       ...provided,
-      backgroundColor: 'white',
       boxShadow:
         '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       zIndex: 50,
-      '@media (prefers-color-scheme: dark)': {
-        backgroundColor: 'rgb(31 41 55)',
-        borderColor: 'rgb(55 65 81)',
-      },
     }),
     menuList: (provided) => ({
       ...provided,
       padding: '4px',
       maxHeight: '240px',
     }),
-    option: (provided, state) => ({
+    option: (provided) => ({
       ...provided,
-      backgroundColor: state.isSelected
-        ? 'var(--color-brand-50)'
-        : state.isFocused
-        ? 'var(--color-gray-100)'
-        : 'transparent',
-      color: state.isSelected
-        ? 'var(--color-brand-600)'
-        : 'var(--color-gray-800)',
       cursor: 'pointer',
-      '&:active': {
-        backgroundColor: state.isSelected
-          ? 'var(--color-brand-100)'
-          : 'var(--color-gray-200)',
-      },
-      '@media (prefers-color-scheme: dark)': {
-        backgroundColor: state.isSelected
-          ? 'rgb(59 130 246 / 0.2)'
-          : state.isFocused
-          ? 'rgb(55 65 81)'
-          : 'transparent',
-        color: state.isSelected ? 'rgb(96 165 250)' : 'rgb(255 255 255 / 0.9)',
-        '&:active': {
-          backgroundColor: state.isSelected
-            ? 'rgb(59 130 246 / 0.3)'
-            : 'rgb(75 85 99)',
-        },
-      },
     }),
     indicatorSeparator: () => ({
       display: 'none',
@@ -143,12 +94,6 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
       '&:hover': {
         color: 'var(--color-gray-600)',
       },
-      '@media (prefers-color-scheme: dark)': {
-        color: 'rgb(156 163 175)',
-        '&:hover': {
-          color: 'rgb(209 213 219)',
-        },
-      },
     }),
     clearIndicator: (provided) => ({
       ...provided,
@@ -156,72 +101,44 @@ const Autocomplete: React.FC<AutocompleteProps> = ({
       '&:hover': {
         color: 'var(--color-gray-600)',
       },
-      '@media (prefers-color-scheme: dark)': {
-        color: 'rgb(156 163 175)',
-        '&:hover': {
-          color: 'rgb(209 213 219)',
-        },
-      },
     }),
   };
 
-  // Use CreatableSelect if allowCustom is true
-  if (allowCustom) {
-    const CreatableSelect = import('react-select/creatable');
+  const commonSelectProps = {
+    isClearable: true,
+    isDisabled: disabled,
+    options,
+    value: selectedOption,
+    onChange: handleChange,
+    placeholder,
+    styles: customStyles,
+    classNamePrefix: 'react-select',
+    className: 'react-select-container',
+    isSearchable: true,
+    theme: (theme: Theme) => ({
+      ...theme,
+      colors: {
+        ...theme.colors,
+        primary: 'var(--color-brand-500)',
+        primary25: 'var(--color-brand-50)',
+        primary50: 'var(--color-brand-100)',
+        primary75: 'var(--color-brand-200)',
+      },
+    }),
+  } as const;
 
-    return (
-      <div className={className}>
-        <CreatableSelect
-          isClearable
-          isDisabled={disabled}
-          options={options}
-          value={selectedOption}
-          onChange={handleChange}
-          placeholder={placeholder}
-          styles={customStyles}
-          formatCreateLabel={(inputValue: string) => `Criar "${inputValue}"`}
-          createOptionPosition='first'
-          classNamePrefix='react-select'
-          className='react-select-container'
-          isSearchable
-          theme={(theme: Theme) => ({
-            ...theme,
-            colors: {
-              ...theme.colors,
-              primary: 'var(--color-brand-500)',
-              primary25: 'var(--color-brand-50)',
-              primary50: 'var(--color-brand-100)',
-              primary75: 'var(--color-brand-200)',
-            },
-          })}
-        />
-      </div>
-    );
-  }
+  const SelectComponent = allowCustom ? CreatableSelect : Select;
 
   return (
     <div className={className}>
-      <Select
-        isClearable
-        isDisabled={disabled}
-        options={options}
-        value={selectedOption}
-        onChange={handleChange}
-        placeholder={placeholder}
-        styles={customStyles}
-        classNamePrefix='react-select'
-        className='react-select-container'
-        isSearchable
-        theme={(theme: Theme) => ({
-          ...theme,
-          colors: {
-            ...theme.colors,
-            primary: 'var(--color-brand-500)',
-            primary25: 'var(--color-brand-50)',
-            primary50: 'var(--color-brand-100)',
-            primary75: 'var(--color-brand-200)',
-          },
-        })}
+      <SelectComponent
+        {...commonSelectProps}
+        {...(allowCustom
+          ? {
+              formatCreateLabel: (inputValue: string) => `Criar "${inputValue}"`,
+              createOptionPosition: 'first' as const,
+            }
+          : {})}
       />
     </div>
   );

@@ -36,7 +36,7 @@ export default function ModuleForm() {
     defaultValues: {
       name: '',
       description: '',
-      code: '',
+      key: '',
       meta: {
         translations: [],
       },
@@ -63,7 +63,7 @@ export default function ModuleForm() {
           methods.reset({
             name: module.name,
             description: module.description || '',
-            code: module.code,
+            key: module.key,
             meta: {
               translations: translationsArray,
             },
@@ -100,7 +100,7 @@ export default function ModuleForm() {
       if (isEdit && id) {
         const updateData = {
           name: formData.name,
-          code: formData.code,
+          key: formData.key,
           description: formData.description,
           isActive: formData.isActive,
           meta: {
@@ -112,7 +112,7 @@ export default function ModuleForm() {
       } else {
         const createData = {
           name: formData.name!,
-          code: formData.code!,
+          key: formData.key!,
           description: formData.description,
           isActive: formData.isActive,
           meta: {
@@ -157,12 +157,12 @@ export default function ModuleForm() {
                       disabled={isLoading}
                     />
                     <FormInput
-                      name="code"
+                      name="key"
                       label="Código"
                       type="text"
-                      placeholder="MODULE_CODE"
+                      placeholder="MODULE_KEY"
                       required
-                      disabled={isLoading}
+                      disabled={isLoading || isEdit}
                     />
                   </div>
 

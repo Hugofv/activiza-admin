@@ -45,7 +45,7 @@ export default function PlatformUsersList() {
         limit: 20,
         q: searchQuery || undefined,
       });
-      setUsers(response.data);
+      setUsers(response.results);
       setTotalPages(response.totalPages);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários';

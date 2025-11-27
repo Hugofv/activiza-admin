@@ -11,7 +11,7 @@ export interface ModuleMetaFormData extends MetaFormData {
 
 export interface CreateModuleFormData {
   name: string;
-  code: string;
+  key: string;
   description?: string;
   meta?: ModuleMetaFormData;
   isActive: boolean;
@@ -19,7 +19,7 @@ export interface CreateModuleFormData {
 
 export interface UpdateModuleFormData {
   name?: string;
-  code?: string;
+  key?: string;
   description?: string;
   meta?: ModuleMetaFormData;
   isActive?: boolean;
@@ -28,7 +28,7 @@ export interface UpdateModuleFormData {
 export const createModuleSchema = yup.object({
   name: yup.string().required('Nome é obrigatório').min(1, 'Nome deve ter pelo menos 1 caractere'),
   description: yup.string().optional(),
-  code: yup
+  key: yup
     .string()
     .required('Código é obrigatório')
     .matches(/^[A-Z_]+$/, 'Código deve conter apenas letras maiúsculas e underscores'),
@@ -43,7 +43,7 @@ export const createModuleSchema = yup.object({
 export const updateModuleSchema = yup.object({
   name: yup.string().min(1, 'Nome deve ter pelo menos 1 caractere').optional(),
   description: yup.string().optional(),
-  code: yup
+  key: yup
     .string()
     .matches(/^[A-Z_]+$/, 'Código deve conter apenas letras maiúsculas e underscores')
     .optional(),

@@ -45,7 +45,7 @@ export default function PlansList() {
         limit: 20,
         q: searchQuery || undefined,
       });
-      setPlans(response.data);
+      setPlans(response.results);
       setTotalPages(response.totalPages);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar planos';

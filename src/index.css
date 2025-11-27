@@ -25,17 +25,17 @@ layer(base);
 }
 
 .dark .react-select__control {
-  background-color: rgb(31 41 55);
-  border-color: rgb(55 65 81);
+  background-color: var(--color-gray-900);
+  border-color: var(--color-gray-800);
 }
 
 .dark .react-select__control:hover {
-  border-color: rgb(75 85 99);
+  border-color: var(--color-gray-700);
 }
 
 .dark .react-select__control--is-focused {
-  border-color: var(--color-brand-800);
-  box-shadow: 0 0 0 2px var(--color-brand-800);
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 2px var(--color-brand-500);
 }
 
 .react-select__input-container {
@@ -51,7 +51,7 @@ layer(base);
 }
 
 .dark .react-select__single-value {
-  color: rgb(255 255 255 / 0.9);
+  color: var(--color-gray-50);
 }
 
 .react-select__placeholder {
@@ -59,7 +59,7 @@ layer(base);
 }
 
 .dark .react-select__placeholder {
-  color: rgb(156 163 175);
+  color: var(--color-gray-400);
 }
 
 .react-select__menu {
@@ -71,8 +71,8 @@ layer(base);
 }
 
 .dark .react-select__menu {
-  background-color: rgb(31 41 55);
-  border: 1px solid rgb(55 65 81);
+  background-color: var(--color-gray-900);
+  border: 1px solid var(--color-gray-800);
 }
 
 .react-select__option {
@@ -80,12 +80,16 @@ layer(base);
   padding: 8px 12px;
 }
 
+.dark .react-select__option {
+  color: var(--color-gray-50);
+}
+
 .react-select__option--is-focused {
   background-color: var(--color-gray-100);
 }
 
 .dark .react-select__option--is-focused {
-  background-color: rgb(55 65 81);
+  background-color: var(--color-gray-800);
 }
 
 .react-select__option--is-selected {
@@ -94,8 +98,8 @@ layer(base);
 }
 
 .dark .react-select__option--is-selected {
-  background-color: rgb(59 130 246 / 0.2);
-  color: rgb(96 165 250);
+  background-color: rgba(70, 95, 255, 0.16); /* brand-500 with subtle overlay */
+  color: var(--color-brand-400);
 }
 
 .react-select__option:active {

@@ -15,7 +15,7 @@ export interface ModuleMeta {
 export interface Module {
   id: number;
   name: string;
-  code: string;
+  key: string;
   description?: string;
   meta?: ModuleMeta;
   isActive: boolean;
@@ -25,7 +25,7 @@ export interface Module {
 
 export interface CreateModuleData {
   name: string;
-  code: string;
+  key: string;
   description?: string;
   meta?: ModuleMeta;
   isActive?: boolean;
@@ -33,7 +33,7 @@ export interface CreateModuleData {
 
 export interface UpdateModuleData {
   name?: string;
-  code?: string;
+  key?: string;
   description?: string;
   meta?: ModuleMeta;
   isActive?: boolean;

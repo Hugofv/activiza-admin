@@ -45,7 +45,7 @@ export default function QualificationsList() {
         limit: 20,
         q: searchQuery || undefined,
       });
-      setQualifications(response.data);
+      setQualifications(response.results);
       setTotalPages(response.totalPages);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar qualificações';

@@ -42,7 +42,7 @@ export default function FeaturesList() {
     const fetchModules = async () => {
       try {
         const response = await modulesService.getAll({ limit: 1000 });
-        setModules(response.data);
+        setModules(response.results);
       } catch {
         // Silently fail
       }
@@ -59,7 +59,7 @@ export default function FeaturesList() {
         limit: 20,
         q: searchQuery || undefined,
       });
-      setFeatures(response.data);
+      setFeatures(response.results);
       setTotalPages(response.totalPages);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar features';
